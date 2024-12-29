@@ -1,12 +1,3 @@
--- if you're from my youtube channel or my video, i've updated every feature, everything should work as intended now. silent aim just shoots the murd's humanoid, so make sure you have the murderer in sight. also, staying still makes it work the best, so try to equip the gun when they're walking forwards, and less side-to-side.
--- the esp is also updated, it looks SO MUCH CLEANER and actually turns off, kinda. if they die and respawn the esp comes back i think, so just click "Turn off ESP" again
--- open source aswell, check out my yt for more open source (maybe) scripts!
--- my main youtube channel: https://www.youtube.com/channel/UCe67Xc9983ramu7ynNUgJGQ
--- taking requests for games aswell, trying to get a feel for lua and coding in general before making it accessible only behind a paywall, or obfuscation of any sort. Happy Scripting! - d3cryptt
--- (script made by d3cryptt)
- 
- 
- 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("MM2 script by d3cryptt!", "Serpent") -- for different colors, use these: "GrapeTheme" "DarkTheme" "LightTheme" "BloodTheme" "Ocean" "Midnight" "Sentinel" "Synapse" "Serpent"
  
@@ -16,16 +7,13 @@ local localPlayer = players.LocalPlayer
 local teleportDistance = 2
 local radius = 20
  
--- Main
 local Main = Window:NewTab("Main")
 local MainSection = Main:NewSection("if you execute this script twice and it breaks, rejoin")
-local MainSection = Main:NewSection("one of the only actual mm2 scripts LMAO")
 local MainSection = Main:NewSection("silent aim is shitty but it works unlike SOME peoples..")
 MainSection:NewButton("Infinite Yield", "admin commands", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
- 
--- Variables for hitbox size and transparency
+
 local hitboxSize = 2
 local hitboxTransparency = 0.5
  
@@ -46,11 +34,11 @@ MainSection:NewButton("Murderer/Sheriff/Innocent ESP", "shows everyone on the ma
         end
  
         if hasGun then
-            highlight.FillColor = Color3.new(0, 0, 1)  -- Blue
+            highlight.FillColor = Color3.new(0, 0, 1)
         elseif hasKnife then
-            highlight.FillColor = Color3.new(1, 0, 0)  -- Red
+            highlight.FillColor = Color3.new(1, 0, 0)
         else
-            highlight.FillColor = Color3.new(0, 1, 0)  -- Green
+            highlight.FillColor = Color3.new(0, 1, 0)
         end
     end
  
@@ -101,20 +89,15 @@ MainSection:NewButton("Murderer/Sheriff/Innocent ESP", "shows everyone on the ma
         local function onToolChanged()
             updateESPColor(player, highlight)
         end
- 
         if player.Backpack then
             player.Backpack.ChildAdded:Connect(onToolChanged)
             player.Backpack.ChildRemoved:Connect(onToolChanged)
         end
- 
         if character then
             character.ChildAdded:Connect(onToolChanged)
             character.ChildRemoved:Connect(onToolChanged)
         end
- 
         createBillboard(character)
- 
-        -- Periodic check to ensure the distance display is present
         game:GetService("RunService").Heartbeat:Connect(function()
             if character:FindFirstChild("HumanoidRootPart") and not character:FindFirstChild("ESPBillboard") then
                 createBillboard(character)
@@ -175,9 +158,7 @@ MainSection:NewButton("Turn off ESP", "turns off the esp finally", function()
         end
     end)
 end)
- 
- 
--- Sliders for Hitbox Size and Transparency
+
 MainSection:NewSlider("Hitbox Size", "Adjust the hitbox size", 40, 1, function(value)
     hitboxSize = value
     for _, player in ipairs(players:GetPlayers()) do
@@ -201,8 +182,7 @@ MainSection:NewSlider("Hitbox Transparency", "Adjust the hitbox transparency", 1
         end
     end
 end)
- 
--- WalkSpeed and JumpPower sliders
+
 MainSection:NewSlider("WalkSpeed", "Adjust the WalkSpeed", 25, 16, function(value)
     localPlayer.Character.Humanoid.WalkSpeed = value
 end)
@@ -210,8 +190,7 @@ end)
 MainSection:NewSlider("JumpPower", "Adjust the JumpPower", 100, 50, function(value)
     localPlayer.Character.Humanoid.JumpPower = value
 end)
- 
--- Sheriff/Innocent Section
+
 local SheriffInnocent = Window:NewTab("Sheriff/Innocent")
 local SheriffInnocentSection = SheriffInnocent:NewSection("Sheriff/Innocent")
 SheriffInnocent:NewSection("this button is a toggle it just doesnt look like it")
@@ -220,19 +199,11 @@ SheriffInnocent:NewSection("make sure the murderer isn't behind a wall tho")
 SheriffInnocentSection:NewButton("Teleport to the gun", "grab that gun", function()
     local player = localPlayer.Character
     local part = workspace.Normal:FindFirstChild("GunDrop") 
- 
-    -- Save the player's original CFrame
     local originalCFrame = player.HumanoidRootPart.CFrame
- 
-    -- Teleport to the part
     if part then
         player.HumanoidRootPart.CFrame = part.CFrame
     end
- 
-    -- Wait for a short duration (e.g., 2 seconds) before teleporting back
     wait(0.3)
- 
-    -- Teleport back to the original CFrame
     player.HumanoidRootPart.CFrame = originalCFrame
 end)
  
@@ -320,25 +291,20 @@ end
 SheriffInnocentSection:NewButton("Shoot Murderer (silent aim)", "Enables or disables silent aim", function()
     silentAimEnabled = not silentAimEnabled
 end)
- 
--- Run the silent aim function every 0.1 seconds
+
 game:GetService("RunService").RenderStepped:Connect(function()
     silentAim()
 end)
- 
--- Murderer Section
+
 local Murderer = Window:NewTab("Murderer")
 local MurdererSection = Murderer:NewSection("Murderer")
- 
 local function hasItem(player, itemName)
-    -- Check the backpack
     for _, item in ipairs(player.Backpack:GetChildren()) do
         if item.Name == itemName then
             return true
         end
     end
- 
-    -- Check the equipped items (character)
+
     for _, item in ipairs(player.Character:GetChildren()) do
         if item:IsA("Tool") and item.Name == itemName then
             return true
@@ -347,7 +313,7 @@ local function hasItem(player, itemName)
  
     return false
 end
- 
+
 local function teleportToPlayerWithGun()
     for _, player in ipairs(players:GetPlayers()) do
         if hasItem(player, "Gun") then
@@ -362,14 +328,12 @@ end
 MurdererSection:NewButton("Teleport to Sheriff", "Teleports you to the player with the gun", function()
     teleportToPlayerWithGun()
 end)
- 
--- Variables for the grab feature
+
 local grabDistance = 20
 local teleportDistance = 2
 local keybind = Enum.KeyCode.E
 local grabEnabled = false
- 
--- Function to handle grabbing players
+
 local function grabPlayers()
     while grabEnabled do
         for _, player in ipairs(players:GetPlayers()) do
@@ -444,13 +408,11 @@ AutofarmSection:NewToggle("TWEEN Autofarm Toggle", "Automatically collects coins
             local tween = TweenService:Create(LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = closestCoin.CFrame})
             tween:Play()
             tween.Completed:Wait()
-            
-            -- Check if the tween is still valid
             if tick() - startTime < tweenInfo.Time and closestCoin:IsDescendantOf(workspace) then
                 wait(2)
             end
         else
-            wait(0.5) -- Check again after a short delay if no coins are found
+            wait(0.5)
         end
     end
 end)
@@ -459,25 +421,20 @@ local AutofarmSection = Autofarm:NewSection("under this is the TELEPORT autofarm
  
  
 local teleporting = false
- 
--- Define the path to the CoinContainer and the target teleport position
 local coinContainer = game.Workspace.Normal.CoinContainer
 local lobbyFountainPosition = game.Workspace.Lobby.Map.Fountain.Nikilis.WanwoodAntlers.WanwoodAntlers.Position
- 
--- Function to teleport to a specific position
+
 local function teleportToPosition(targetPosition)
     local character = game.Players.LocalPlayer.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
- 
-    -- Set the character's HumanoidRootPart CFrame to the target position
+
     character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
 end
- 
--- Function to find the closest coin
+
 local function getClosestCoin()
     local character = game.Players.LocalPlayer.Character
     local closestCoin = nil
-    local shortestDistance = math.huge -- Initialize to a very large number
+    local shortestDistance = math.huge
  
     for _, coin in ipairs(coinContainer:GetChildren()) do
         if coin:IsA("Part") and coin:FindFirstChild("TouchInterest") then
@@ -491,37 +448,33 @@ local function getClosestCoin()
     
     return closestCoin
 end
- 
--- Function to start the teleportation loop
+
 local function startTeleportation()
     teleporting = true
     while teleporting do
         local closestCoin = getClosestCoin()
  
         if closestCoin then
-            wait(3) -- Wait for 4 seconds before teleporting to the coin
+            wait(3)
             teleportToPosition(closestCoin.Position)
-            wait(0.4) -- Wait for 1 second at the coin's position
+            wait(0.4)
             teleportToPosition(lobbyFountainPosition)
         else
-            -- No coins found, stay at the lobby fountain
             teleportToPosition(lobbyFountainPosition)
         end
  
-        wait(0.5) -- Check again after a short delay
+        wait(0.5)
     end
 end
- 
--- Function to stop the teleportation loop
+
 local function stopTeleportation()
     teleporting = false
 end
- 
--- Create buttons in the Autofarm section
+
 AutofarmSection:NewButton("Start Autofarm", "Automatically collects coins", function()
     startTeleportation()
 end)
- 
+
 AutofarmSection:NewButton("Stop Autofarm", "Stops the autofarm", function()
     stopTeleportation()
 end)
